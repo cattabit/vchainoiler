@@ -25,13 +25,21 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncWebServer-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/LittleFS/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Bounce2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/SoftwareSerial/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/TinyGPS-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncWebServer-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/TinyGPS-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/LittleFS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/SoftwareSerial/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Bounce2}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ArduinoJson/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1312424396" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -43,13 +51,21 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncWebServer-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/LittleFS/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Bounce2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/SoftwareSerial/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/TinyGPS-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncWebServer-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/TinyGPS-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/LittleFS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/SoftwareSerial/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Bounce2}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ArduinoJson/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.2142660022" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -61,13 +77,21 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncWebServer-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/LittleFS/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Bounce2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/SoftwareSerial/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/TinyGPS-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncWebServer-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/TinyGPS-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/LittleFS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/SoftwareSerial/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Bounce2}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ArduinoJson/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1683691849" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -122,7 +146,11 @@
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 	</storageModule>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/VOiler_WEB"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
 			<target name="mkspiffs" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
@@ -143,4 +171,5 @@
 			</target>
 		</buildTargets>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
