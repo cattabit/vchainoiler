@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="io.sloeber.core.sketch.0">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="io.sloeber.core.sketch.0" moduleId="org.eclipse.cdt.core.settings" name="Release">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildProperties="" cleanCommand="rm -f" description="" id="io.sloeber.core.sketch.0" name="Release" parent="io.sloeber.core.configuration.release">
+					<folderInfo id="io.sloeber.core.sketch.0." name="/" resourcePath="">
+						<toolChain id="io.sloeber.core.toolChain.release.1681890956" name="Arduino Toolchain (Sloeber edition)" superClass="io.sloeber.core.toolChain.release">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.930011543" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
+							<builder buildPath="${workspace_loc:/Template8266}/Release" id="io.sloeber.sketch.builder.1051932014" keepEnvironmentInBuildfile="false" name="Arduino sketch builder" parallelBuildOn="false" superClass="io.sloeber.sketch.builder"/>
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.2102358241" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.440211084" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncWebServer-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/LittleFS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Bounce2}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/SoftwareSerial/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/TinyGPS-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/core}&quot;"/>
+								</option>
+								<inputType id="io.sloeber.compiler.cpp.sketch.input.1312424396" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
+							</tool>
+							<tool id="io.sloeber.tool.compiler.c.1212682695" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.918916242" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncWebServer-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/LittleFS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Bounce2}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/SoftwareSerial/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/TinyGPS-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/core}&quot;"/>
+								</option>
+								<inputType id="io.sloeber.compiler.c.sketch.input.2142660022" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
+							</tool>
+							<tool id="io.sloeber.tool.sketch.compiler.s.1579730135" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.asm.sketch.option.incpath.754349947" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncWebServer-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/LittleFS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Bounce2}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/SoftwareSerial/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/TinyGPS-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/core}&quot;"/>
+								</option>
+								<inputType id="io.sloeber.compiler.S.sketch.input.1683691849" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
+							</tool>
+							<tool id="io.sloeber.tool.ar.1154516431" name="Arduino archiver" superClass="io.sloeber.tool.ar"/>
+							<tool id="io.sloeber.tool.combine.1295926214" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
+							<tool id="io.sloeber.tool.objcopy.eep.689392495" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep"/>
+							<tool id="io.sloeber.tool.size.1435026317" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="io.sloeber.core.sketch.0.libraries/**/._*" resourcePath="libraries/**/._*">
+						<toolChain id="io.sloeber.core.toolChain5.683981313" superClass="io.sloeber.core.toolChain5">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/**/._*.600715969" name=""/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/test*/**" resourcePath="libraries/?*/**/test*/**">
+						<toolChain id="io.sloeber.core.toolChain3.1967876255" superClass="io.sloeber.core.toolChain3">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/test*/**.435638103" name=""/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/?xtras/**" resourcePath="libraries/?*/**/?xtras/**">
+						<toolChain id="io.sloeber.core.toolChain2.1494693201" superClass="io.sloeber.core.toolChain2">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xtras/**.295522833" name=""/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/?xamples/**" resourcePath="libraries/?*/**/?xamples/**">
+						<toolChain id="io.sloeber.core.toolChain1.6155110" superClass="io.sloeber.core.toolChain1">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/?xamples/**.1835788518" name=""/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/**/third-party/**" resourcePath="libraries/?*/**/third-party/**">
+						<toolChain id="io.sloeber.core.toolChain4.1301806798" superClass="io.sloeber.core.toolChain4">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/**/third-party/**.877082947" name=""/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="io.sloeber.core.sketch.0.libraries/?*/utility/*/*" resourcePath="libraries/?*/utility/*/*">
+						<toolChain id="io.sloeber.core.toolChain6.477762071" superClass="io.sloeber.core.toolChain6">
+							<targetPlatform id="io.sloeber.core.sketch.0.libraries/?*/utility/*/*.1236105999" name=""/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="libraries/LittleFS/lib|libraries/ESPAsyncWebServer-master/.github|libraries/ESPAsyncTCP-master/ssl|libraries/ESPAsyncTCP-master/.github|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="Template8266.io.sloeber.core.sketch.207494370" name="Arduino sketch" projectType="io.sloeber.core.sketch"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+	</storageModule>
+	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+		<buildTargets>
+			<target name="mkspiffs" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>${sloeber.make_location}make</buildCommand>
+				<buildArguments/>
+				<buildTarget>mkspiffs</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="mklittlefs" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>${sloeber.make_location}make</buildCommand>
+				<buildArguments/>
+				<buildTarget>mklittlefs</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+		</buildTargets>
+	</storageModule>
+</cproject>

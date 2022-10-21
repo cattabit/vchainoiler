@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>V-Chain_Oiler</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<!--link rel="stylesheet" type="text/css" href="all.css"-->
+<link rel="stylesheet" type="text/css" href="style.css">
+<link rel="stylesheet" type="text/css" href="pure-min.css">
+<!--script src="gauge.min.js"></script-->
+</head>
+
+<body>
+	<style scoped="">
+.button-active {
+	color: white;
+	border-radius: 4px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-active {
+	background: rgb(28, 184, 65);
+	/* this is a green */
+}
+</style>
+	<!-- <div class="topnav">
+      <h1>ESP WEB SERVER GAUGES</h1>
+    </div>
+    <div class="content">
+      <div class="card-grid">
+		<div class="card">
+          <p class="card-title">Состояние</p>
+          Текущий режим  1-MILAGE  2-TIMER  3-PUMP  4-OFF: <span id="_MODE"> MODE </span> <br>
+		  Текущее состояние насоса: <span id="_PumpStat"> PumpStat </span> <br>
+		  Оставшееся количество инпульсов за текущий запущеный цикл прокачки: <span id="_PUMP_count"> PUMP_count </span> <br>
+        </div>
+        <div class="card">
+          <p class="card-title">Параметры "По Пробегу"</p>
+          Интервал смазки в режиме Город по пробегу в м: <span id="_MIntervalTown"> MIntervalTown </span> <br>
+		  Интервал смазки в режиме Трасса по пробегу в м: <span id="_MIntervalRoad"> MIntervalRoad </span> <br>
+		  Процент увеличения частоты смазки в дождь: <span id="_MCoefRain"> MCoefRain </span> <br>
+		  Минимальная скорость смазки: <span id="_MMinSpeedture"> MMinSpeedture </span> <br>
+		  Скорость смены режима с Города на Трассу: <span id="_MRoadSpeed"> MRoadSpeed </span> <br>
+		  <br>
+		  текущий интервал режима MILAGE, при включении всегда AUTO (10-AUTO  20-RAIN  30-OFF): <span id="_MODE_MILAGE"> MODE_MILAGE </span> <br>
+		  Остаток пробега до смазки: <span id="_OdoLeft"> OdoLeft </span> <br>
+        </div>
+		<div class="card">
+          <p class="card-title">Параметры "По Таймеру"</p>
+		  Интервал в сек, между импульсами в Городе: <span id="_TIntervalTown"> TIntervalTown </span> <br>
+		  Интервал в сек, между импульсами на Трассе: <span id="_TIntervalRoad"> TIntervalRoad </span> <br>
+		  Интервал в сек в дождь: <span id="_TIntervalRain"> TIntervalRain </span> <br>
+		  текущий интервал режима TIMER, при включении всегда TOWN (10-TOWN  20-ROAD  30-RAIN  40-OFF): <span id="_MODE_TIMER"> MODE_TIMER </span> <br>
+		  Остаток времени до смазки: <span id="_TimeLeft"> TimeLeft </span> <br>
+        </div>
+		<div class="card">
+          <p class="card-title">Параметры Общие</p>
+		  Параметры датчика оборота колеса: <br>
+		  длина окружности колеса: <span id="_MWeelCircle"> MWeelCircle </span> <br>
+		  Число импульсов на оборот колеса: <span id="_MSignalsOn1"> MSignalsOn1 </span> <br>
+		  Длительность импульса во всех режимах: <span id="_DurationImp"> DurationImp </span> <br>
+		  <br>
+		  Параметры прокачки: <br>
+		  Количество импульсов за цикл прокачки: <span id="_PNumberImp"> PNumberImp </span> <br>
+		  Интервал между импульсами при прокачке: <span id="_PImpInterval"> PImpInterval </span> <br>
+        </div>	
+      </div>
+    </div>
+    <script src="script.js"></script>
+	-->
+
+
+	<div id="layout">
+		<!-- Menu toggle -->
+		<a href="#menu" id="menuLink" class="menu-link"> <!-- Hamburger icon --> <span></span>
+		</a>
+
+		<div id="menu">
+			<div class="pure-menu">
+				<a class="pure-menu-heading" href="#company">V-Oiler v0.0.1</a>
+
+				<ul class="pure-menu-list">
+					<li class="pure-menu-item"><a href="/index.html" class="pure-menu-link">Дашборд</a></li>
+					<li class="pure-menu-item"><a href="#about" class="pure-menu-link">Информация</a></li>
+
+					<li class="pure-menu-item menu-item-divided pure-menu-selected"><a href="/settings.html"
+						class="pure-menu-link"
+					>Настройки</a></li>
+
+					<li class="pure-menu-item"><a href="#contact" class="pure-menu-link">Контакты</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="main">
+			<div class="header">
+				<h1>Настройки</h1>
+				<h2>Конфигурация автоматического смазчика цепи V-Oiler</h2>
+			</div>
+
+			<div class="content">
+				<h2 class="content-subhead">Состояние</h2>
+				<p>
+				<div id="_MODE_SWTICH_BLOCK">
+					<button id="_MODE_SWITCH_1" type="button" class="pure-button pure-button-primary" onclick="return postSetMode(1)">Пробег</button>
+					<button id="_MODE_SWITCH_2" type="button" class="pure-button pure-button-primary" onclick="return postSetMode(2)">Таймер</button>
+					<button id="_MODE_SWITCH_3" type="button" class="pure-button pure-button-primary" onclick="return postSetMode(3)">Прокачка</button>
+					<button id="_MODE_SWITCH_4" type="button" class="pure-button pure-button-primary" onclick="return postSetMode(4)">Выключен</button>
+				</div>
+				</p>
+
+				<p>
+				<form class="pure-form pure-form-aligned">
+					<fieldset>
+						<div class="pure-control-group">
+							<label for="aligned-MODE">Текущий режим:</label> <input type="text" id="_MODE" placeholder="MODE" readonly="" />
+							<span class="pure-form-message-inline">(1-MILAGE / 2-TIMER / 3-PUMP / 4-OFF)</span>
+						</div>
+
+						<div class="pure-control-group">
+							<label for="aligned-OdoLeft">Текущее состояние насоса:</label> <input type="text" id="_PumpStat" value="PumpStat"
+								readonly=""
+							/> <span class="pure-form-message-inline"> </span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-Speed">Текущая скорость:</label> <input type="text" id="_Speed" value="Speed" readonly="" />
+							<span class="pure-form-message-inline"> </span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-Odo">Текущее значение счетчика пробега:</label> <input type="text" id="_Odo" value="Odo"
+								readonly=""
+							/> <span class="pure-form-message-inline"> </span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-PowerIndStat">Текущее состояние светового индикатора:</label> <input type="text"
+								id="_PowerIndStat" value="_PowerIndStat" readonly=""
+							/> <span class="pure-form-message-inline"> </span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-alivebyte">Тестовый счетчик (сам по себе, для отладки. Удалить.):</label> <input type="text"
+								id="_alivebyte" value="alivebyte" readonly=""
+							/> <span class="pure-form-message-inline"> </span>
+						</div>
+					</fieldset>
+				</form>
+				</p>
+
+
+				<h2 class="content-subhead">Параметры GPS</h2>
+				<p>
+				<form class="pure-form pure-form-aligned">
+					<fieldset>
+						<div class="pure-control-group" id="_gps_fixmode_ind">
+							<button id="_gps_fixmode_btn" type="button" class="pure-button pure-button-primary" readonly="">NA</button>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gps_speedog">Speed on ground:</label> <input type="text" id="_gps_speedog"
+								placeholder="gps_speedog" readonly=""
+							/> <span class="pure-form-message-inline">км/ч (пока для сравнения, возможно потом удалим)</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gps_speed">Скорость:</label> <input type="text" id="_gps_speed" value="gps_speed" readonly="" />
+							<span class="pure-form-message-inline">км/ч</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gps_lastpointdist">Пройденная дистанция:</label> <input type="text" id="_gps_lastpointdist"
+								placeholder="gps_lastpointdist" readonly=""
+							/> <span class="pure-form-message-inline">м (Дистанция до прошлой точки успешного позиционирования)</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gps_Satelites">Кол-во спутников:</label> <input type="text" id="_gps_Satelites"
+								placeholder="gps_Satelites" readonly=""
+							/> <span class="pure-form-message-inline">шт (Количество спутников, используемых для позиционирования)</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gps_SatelitesVisible">Количество видимых спутников:</label> <input type="text"
+								id="_gps_SatelitesVisible" placeholder="gps_SatelitesVisible" readonly=""
+							/> <span class="pure-form-message-inline"></span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gps_fixmode">Режим фиксации:</label> <input type="text" id="_gps_fixmode"
+								placeholder="gps_fixmode" readonly=""
+							/> <span class="pure-form-message-inline">=1 и др - Нет фиксации, 2=2D, 3=3D</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gps_hdop">Точность позиционирования:</label> <input type="text" id="_gps_hdop"
+								placeholder="gps_hdop" readonly=""
+							/> <span class="pure-form-message-inline"></span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gps_gps_DiagMsg">Диагностика:</label> <input type="text"
+								id="_gps_DiagMsg" placeholder="gps_DiagMsg" readonly=""
+							/> <span class="pure-form-message-inline">Диагностическое сообщение</span>
+						</div>
+
+						<div class="pure-control-group">
+							<label for="aligned-gpsMinCalcSpeed">Мин скорость:</label> <input type="text" id="_gpsMinCalcSpeed"
+								placeholder="gpsMinCalcSpeed" onchange="return postSettingsGPS()"
+							/> <span class="pure-form-message-inline">Минимальная скорость расчета дистанции движения по GPS, км/ч</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gpsAgeMax">Актуальность данных:</label> <input type="text" id="_gpsAgeMax"
+								placeholder="gpsAgeMax" onchange="return postSettingsGPS()"
+							/> <span class="pure-form-message-inline">Значение максимальной величины "старости" данных, т.е.
+								определяется когда считать данные протухшими, мс.</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gpsUpdatePeriod">Период обновления:</label> <input type="text" id="_gpsUpdatePeriod"
+								placeholder="gpsUpdatePeriod" onchange="return postSettingsGPS()"
+							/> <span class="pure-form-message-inline">Значение периодичности обновления данных GPS, мс</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-gpsDataWait">Длительность ожидания данных:</label> <input type="text" id="_gpsDataWait"
+								placeholder="gpsDataWait" onchange="return postSettingsGPS()"
+							/> <span class="pure-form-message-inline">Длительность ожидания данных на порту обмена. Наверное должна
+								быть не меньше частоты обновления данных в модуле (в настройках модуля, u-center)</span>
+						</div>
+						<div class="pure-controls">
+							<button type="button" class="pure-button pure-button-primary" onclick="return postSettingsGPS()">Сохранить</button>
+						</div>
+					</fieldset>
+				</form>
+				</p>
+
+
+				<h2 class="content-subhead">Параметры "По Пробегу"</h2>
+				<p>
+				<form class="pure-form pure-form-aligned">
+					<fieldset>
+						<div class="pure-control-group">
+							<label for="aligned-MODE_MILAGE">Текущий интервал режима MILAGE:</label> <input type="text" id="_MODE_MILAGE"
+								placeholder="MODE_MILAGE" readonly=""
+							/> <span class="pure-form-message-inline">при включении всегда AUTO (10-AUTO / 20-RAIN / 30-OFF)</span>
+						</div>
+						<div id="_MODE_MILAGE_SWTICH_BLOCK">
+							<button id="_MODE_MILAGE_SWITCH_10" type="button" class="pure-button pure-button-primary"
+								onclick="return postSetModeMilage(10)"
+							>АВТО</button>
+							<button id="_MODE_MILAGE_SWITCH_20" type="button" class="pure-button pure-button-primary"
+								onclick="return postSetModeMilage(20)"
+							>Дождь</button>
+							<button id="_MODE_MILAGE_SWITCH_30" type="button" class="pure-button pure-button-primary"
+								onclick="return postSetModeMilage(30)"
+							>Выключен</button>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-OdoLeft">Остаток пробега до смазки:</label> <input type="text" id="_OdoLeft" value="OdoLeft"
+								readonly=""
+							/> <span class="pure-form-message-inline">м</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-MIntervalTown">Интервал смазки в режиме Город по пробегу:</label> <input type="text"
+								id="_MIntervalTown" placeholder="MIntervalTown" onchange="return postSettingsMilage()"
+							/> <span class="pure-form-message-inline">м</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-MIntervalRoad">Интервал смазки в режиме Трасса по пробегу:</label> <input type="text"
+								id="_MIntervalRoad" placeholder="MIntervalRoad" onchange="return postSettingsMilage()"
+							/> <span class="pure-form-message-inline">м</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-MRoadSpeed">Скорость смены режима с Города на Трассу:</label> <input type="text"
+								id="_MRoadSpeed" placeholder="MRoadSpeed" onchange="return postSettingsMilage()"
+							/> <span class="pure-form-message-inline">км/ч</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-MMinSpeed">Минимальная скорость смазки:</label> <input type="text" id="_MMinSpeed"
+								placeholder="MMinSpeed" onchange="return postSettingsMilage()"
+							/> <span class="pure-form-message-inline">км/ч</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-MCoefRain">Процент увеличения частоты смазки в дождь:</label> <input type="text"
+								id="_MCoefRain" placeholder="MCoefRain" onchange="return postSettingsMilage()"
+							/> <span class="pure-form-message-inline">%</span>
+						</div>
+						<div class="pure-controls">
+							<button type="button" class="pure-button pure-button-primary" onclick="return postSettingsMilage()">Сохранить</button>
+						</div>
+					</fieldset>
+				</form>
+				</p>
+
+				<h2 class="content-subhead">Параметры "По Таймеру"</h2>
+				<p>
+				<form class="pure-form pure-form-aligned" method="post">
+					<fieldset>
+						<div class="pure-control-group">
+							<label for="aligned-MODE_TIMER">Текущий интервал режима TIMER:</label> <input type="text" id="_MODE_TIMER"
+								placeholder="MODE_TIMER" readonly=""
+							/> <span class="pure-form-message-inline">при включении всегда TOWN (10-TOWN / 20-ROAD / 30-RAIN /
+								40-OFF)</span>
+						</div>
+						<div id="_MODE_TIMER_SWTICH_BLOCK">
+							<button id="_MODE_TIMER_SWITCH_10" type="button" class="pure-button pure-button-primary"
+								onclick="return postSetModeTimer(10)"
+							>Город</button>
+							<button id="_MODE_TIMER_SWITCH_20" type="button" class="pure-button pure-button-primary"
+								onclick="return postSetModeTimer(20)"
+							>Шоссе</button>
+							<button id="_MODE_TIMER_SWITCH_30" type="button" class="pure-button pure-button-primary"
+								onclick="return postSetModeTimer(30)"
+							>Дождь</button>
+							<button id="_MODE_TIMER_SWITCH_40" type="button" class="pure-button pure-button-primary"
+								onclick="return postSetModeTimer(40)"
+							>Выключен</button>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-TimeLeft">Остаток времени до смазки:</label> <input type="text" id="_TimeLeft"
+								value="TimeLeft" readonly=""
+							/> <span class="pure-form-message-inline">сек</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-TIntervalTown">Интервал между импульсами в Городе:</label> <input type="text"
+								id="_TIntervalTown" placeholder="TIntervalTown" onchange="return postSettingsTimer()"
+							/> <span class="pure-form-message-inline">сек</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-TIntervalRoad">Интервал между импульсами на Трассе:</label> <input type="text"
+								id="_TIntervalRoad" placeholder="TIntervalRoad" onchange="return postSettingsTimer()"
+							/> <span class="pure-form-message-inline">сек</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-TIntervalRain">Интервал в дождь:</label> <input type="text" id="_TIntervalRain"
+								placeholder="TIntervalRain" onchange="return postSettingsTimer()"
+							/> <span class="pure-form-message-inline">сек</span>
+						</div>
+						<div class="pure-controls">
+							<button type="button" class="pure-button pure-button-primary" onclick="return postSettingsTimer()">Сохранить</button>
+						</div>
+					</fieldset>
+				</form>
+				</p>
+
+
+				<h2 class="content-subhead">Параметры прокачки</h2>
+				<p>Прокачка предназначена для заполнения маслопроводов.</p>
+				<p>
+				<form class="pure-form pure-form-aligned">
+					<fieldset>
+						<div class="pure-control-group">
+							<label for="aligned-PUMP_count">Оставшееся количество импульсов:</label> <input type="text" id="_PUMP_count"
+								value="PUMP_count" readonly=""
+							/> <span class="pure-form-message-inline">за текущий запущеный цикл прокачки</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-PNumberImp">Количество импульсов:</label> <input type="text" id="_PNumberImp"
+								placeholder="PNumberImp" onchange="return postSettingsPump()"
+							/> <span class="pure-form-message-inline">за цикл прокачки</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-PImpInterval">Интервал между импульсами при прокачке:</label> <input type="text"
+								id="_PImpInterval" placeholder="PImpInterval" onchange="return postSettingsPump()"
+							/> <span class="pure-form-message-inline">мс</span>
+						</div>
+						<div class="pure-controls">
+							<button type="button" class="pure-button pure-button-primary" onclick="return postSettingsPump()">Сохранить</button>
+						</div>
+					</fieldset>
+				</form>
+				</p>
+
+
+				<h2 class="content-subhead">Параметры датчика оборота колеса</h2>
+				<p>
+				<form class="pure-form pure-form-aligned">
+					<fieldset>
+						<div class="pure-control-group">
+							<label for="aligned-MWeelCircle">Длина окружности колеса:</label> <input type="text" id="_MWeelCircle"
+								placeholder="MWeelCircle" onchange="return postSettingsWheel()"
+							/> <span class="pure-form-message-inline">мм</span>
+						</div>
+						<div class="pure-control-group">
+							<label for="aligned-MSignalsOn1">Число импульсов на оборот колеса:</label> <input type="text" id="_MSignalsOn1"
+								placeholder="MSignalsOn1" onchange="return postSettingsWheel()"
+							/> <span class="pure-form-message-inline">шт</span>
+						</div>
+						<!-- div class="pure-control-group">
+							<label for="aligned-MSignalsOn1_Range">Число импульсов на
+								оборот колеса:</label> <input type="range" id="_MSignalsOn1_Range"
+								placeholder="MSignalsOn1" min="0" max="50"
+								oninput="_MSignalsOn1.value = _MSignalsOn1_Range.value"
+								onchange="return postSettingsWheel()" /> <span
+								class="pure-form-message-inline">шт</span>
+						</div-->
+						<div class="pure-controls">
+							<button type="button" class="pure-button pure-button-primary" onclick="return postSettingsWheel()">Сохранить</button>
+						</div>
+					</fieldset>
+				</form>
+				</p>
+
+
+				<h2 class="content-subhead">Прочие</h2>
+				<p>
+				<form class="pure-form pure-form-aligned">
+					<fieldset>
+						<div class="pure-control-group">
+							<label for="aligned-DurationImp">Длительность импульса во всех режимах:</label> <input type="text"
+								id="_DurationImp" placeholder="DurationImp" onchange="return postSettingsOthers()"
+							/> <span class="pure-form-message-inline">мс</span>
+						</div>
+						<div class="pure-controls">
+							<button type="button" class="pure-button pure-button-primary" onclick="return postSettingsOthers()">Сохранить</button>
+						</div>
+						<div class="pure-controls">
+							<button type="button" class="pure-button pure-button-primary" onclick="return postSettingsReset()">сбросить ВСЕ настройки на дефолтные</button>
+						</div>
+					</fieldset>
+				</form>
+				</p>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="ui.js"></script>
+	<script src="script.js"></script>
+	<script>
+        // Get current sensor readings when the page loads
+        window.addEventListener('load', getSettings);
+        window.addEventListener('load', getReadings);
+    </script>
+
+</body>
+</html>
+
+
+
