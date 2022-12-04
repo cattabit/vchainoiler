@@ -13,7 +13,9 @@
 #include <Arduino.h>
 #include <Bounce2.h>          //библиотека устранения дребезга кнопки
 #include <SoftwareSerial.h>
-#include <TinyGPS.h>
+
+#include "libraries/Logger.h"
+
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 
@@ -66,6 +68,8 @@ int MODEprev = 0; // Храним значение предыдущего режима для возвращнеия в него и
 
 int ind_on = LOW;             // состояние диода
 int PowerIndCnt = 0;           //Количество мыргов светового индикатора
+int timeoff = 1000;    		// Длительность состояния диода индикации "выключено"
+Timer timerPowerInd(1000); // Таймер для индикации
 
 unsigned long currentInd = 0;
 unsigned long previousInd = 0;
@@ -75,173 +79,145 @@ Bounce bouncer1 = Bounce();     //создаем экземпляр класса Bounce кнопки Режим
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+void setPumpOff() {
+	ActlVal.PumpStat = false;
+}
+
+void setPumpImp() {
+	ActlVal.PumpStat = true;
+	timerImpulseDuration.reset();
+	ActlVal.gps_DistFromLastOiling = 0.0;
+}
+
+void pumpProcessLoop() {
+	if (ActlVal.PumpStat)
+		digitalWrite(PumpP, HIGH);
+	else
+		digitalWrite(PumpP, LOW);
+
+	if (timerImpulseDuration.ready())
+		ActlVal.PumpStat = false;
+}
+
 //----------------------------------------------------------------------
 //             Функция вызываемая внешним прерыванием
 //                 (импульс с датчика скорости)
 //----------------------------------------------------------------------
-void ImpScore()
-{
-	Imp++; //Увеличиваем счетчик импульсов на 1
-}
+//void ImpScore() {
+//	Imp++; //Увеличиваем счетчик импульсов на 1
+//}
 
 //----------------------------------------------------------------------
 //             Функция замера скорости
 // Рассчитываем ActualValuesVO.Speed-текущая скорость и ActualValuesVO.Odo -  пробег в метрах до следующего импульса смазки
 //----------------------------------------------------------------------
-void Speedometer()
-{     //Расчитываем скорость
-	if (Stgs.MODE == 1) {
-		cur_ms = millis();       //Присвоили текущее время
-		mSpeed = cur_ms - prev_ms; //Вычислили разницу текущего с предыдущим (prev_ms)
-		if (mSpeed >= IntrS) //Если прошло достаточно времени, то вычисляем дистанцию
-		        {
-			prev_ms = cur_ms; //Переменной предыдущего значения времени присваевается текущее
-
-			//ActualValuesVO.Speed = SettingsVO.MSignalsOn1;
-			ActlVal.Speed = ((prevSpeed * 2 + float(Stgs.MSignalsOn1)) / 3); // усредненное значение от предыдущего.
-			prevSpeed = ActlVal.Speed;
-
-			if (ActlVal.Speed != 0) { //Если количество импульсов не равно 0
-
-			}
-			ActlVal.Dist = float(mSpeed) / 1000 / 3600 * ActlVal.Speed * 1000
-			        * 1000; // пробег за контрольное время в мм
-			ActlVal.Odo += ActlVal.Dist; // / 1000;     //считаем общий пробег в метрах, добавляем последний пробег к имеющемуся значению (в мм)
-
-			ActlVal.Dist = 0;               //обнуляем пробег за интервал
-			mSpeed = 0;              //обнуляем интервал времени замера скорости
-		}
-	}
-}
-
-//---------------------------------------------------------------------
-//           Функция управления насосом в режиме "По пробегу"
-//---------------------------------------------------------------------
-
-void WorkPumpM()
-{ //Функция управления циклами включения/выключения насоса
-	//Для работы функции, должны быть установлены значения ActualValuesVO.Odo и OdoInt
-	if (OdoInt > 0) {   //Если переменная интервала смазки имеет значение
-
-		if (ActlVal.PumpStat) {            //Если статус насоса "включен"
-			if (Stgs.MODE_MILAGE == 10 || Stgs.MODE_MILAGE == 20) { // смазку проводим только если текущий режим "авто" или "дождь"
-				digitalWrite(PumpP, HIGH); //Включаем насос - Начало импульса работы насоса
-				ActlVal.PumpStat = true;    //запоминаем состояние насоса
-			}
-			if ((millis() - TPumpON) > Stgs.DurationImp) //проверяем время работы насоса с момента включения, если пора выключать то:
-			        {
-				ActlVal.PumpStat = false; //Переводим статус насоса в "выключен"
-			}
-		}
-		if (!ActlVal.PumpStat) {          //Если статус насоса "выключен"
-			digitalWrite(PumpP, LOW);       //Выключаем насос
-			ActlVal.PumpStat = false; //Переводим статус насоса в "выключен"
-
-			if (ActlVal.gps_DistFromLastOiling > OdoInt ) //проверяем не прошел ли нужный интервал,если прошел то
-			        {
-				ActlVal.PumpStat = true; //Меняем статус насоса на "включен"
-				TPumpON = millis();           //сохраняем время включения насоса
-				ActlVal.gps_DistFromLastOiling = 0;               //Запускаем новый интервал
-				ActlVal.gps_DistFromLastOiling	= 0;
-			}
-		}
-	}
-}
+//void Odometer() {     //Расчитываем скорость
+//	if (Stgs.MODE == 1) {
+//		cur_ms = millis();       //Присвоили текущее время
+//		mSpeed = cur_ms - prev_ms; //Вычислили разницу текущего с предыдущим (prev_ms)
+//
+//		// TODO: Надо поменять, не котролить тупо время - а вызывать функцию при обновлении данных в GPS!!!
+//
+//		if (mSpeed >= IntrS) { //Если прошло достаточно времени, то вычисляем дистанцию
+//			prev_ms = cur_ms; //Переменной предыдущего значения времени присваевается текущее
+//
+//			//ActualValuesVO.Speed = SettingsVO.MSignalsOn1;
+//			ActlVal.Speed = ((prevSpeed * 2 + float(Stgs.MSignalsOn1)) / 3); // усредненное значение от предыдущего.
+//			prevSpeed = ActlVal.Speed;
+//
+//			if (ActlVal.Speed != 0) { //Если количество импульсов не равно 0
+//
+//			}
+//
+//			ActlVal.Dist = float(mSpeed) / 1000 / 3600 * ActlVal.Speed * 1000
+//					* 1000; // пробег за контрольное время в мм
+//			ActlVal.Odo += ActlVal.Dist; // / 1000;     //считаем общий пробег в метрах, добавляем последний пробег к имеющемуся значению (в мм)
+//
+//			ActlVal.Dist = 0;               //обнуляем пробег за интервал
+//			mSpeed = 0;              //обнуляем интервал времени замера скорости
+//		}
+//	}
+//}
 
 //----------------------------------------------------------------------
 //             Функция смазки
 //----------------------------------------------------------------------
-void Oiling()
-{             //Функция управления смазкой в зависимости от режима
-
-	switch (Stgs.MODE)
-	{
-
-	//Режим "По пробегу" - Автоматическая смазка по пробегу
-	case 1:
+void oilingCalc() {             //Функция управления смазкой в зависимости от режима
+	switch (Stgs.MODE) {
+	case 1: //Режим "По пробегу" - Автоматическая смазка по пробегу
 		if (MODEprev != Stgs.MODE) {
 			MODEprev = Stgs.MODE;
 			Web_SendSettingsData();
-#ifdef DEBUG
-			Serial.printf("\nMODE=1..");
-#endif
+			ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку
+			Logger_printad("Oiler", "MODE=1..");
 		}
-		ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку
+		//ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку по таймеру
 		ActlVal.TimeLeft = 0; //запоминаем остаток времени до смазки
 
 		if (Stgs.MODE_MILAGE == 10 || Stgs.MODE_MILAGE == 20) { // смазку проводим только если текущий режим "авто" или "дождь"
-			if (ActlVal.Speed > Stgs.MMinSpeed) //Если скорость больше минимальной скорости смазки
-			        {
-				if (ActlVal.Speed > Stgs.MRoadSpeed) //Если скорость выше городской
-				        {
-					if (ActlVal.Speed > 150) //Если скорость больше 150 км/ч - отключаем смазку
-					        {
-						digitalWrite(PumpP, LOW); //Выключаем насос (защита от ошибок)
-						ActlVal.PumpStat = false; //Переводим статус насоса в "выключен"
-						OdoInt = 100000; //задаем периодичность 100км (защита от ошибок)
-					} else       //Если скорость выше городской (едем по трассе)
-					{
-						OdoInt = Stgs.MIntervalRoad; //задаем периодичность смазки для трассы
-						if (Stgs.MODE_MILAGE == 20)
-						    OdoInt = OdoInt / ((100 + Stgs.MCoefRain) / 100); //Если активировани режим дождя, то увеличиваем переодичность уменьшая OdoInt на заданный %
-						WorkPumpM();      //запускаем функцию управления насосом
-					}
-				} else            //Если скорость городская
-				{
-					OdoInt = Stgs.MIntervalTown; //задаем периодичность смазки для города
-					if (Stgs.MODE_MILAGE == 20)
-					    OdoInt = OdoInt / ((100 + Stgs.MCoefRain) / 100); //Если активировани режим дождя, то увеличиваем переодичность уменьшая OdoInt на заданный %
-					WorkPumpM();          //запускаем функцию управления насосом
+		// Определение периода смазки - OdoInt
+			if (ActlVal.gps_speed > Stgs.MRoadSpeed) { 		//Если скорость выше городской
+				if (ActlVal.gps_speed > 150) { 				//Если скорость больше 150 км/ч - отключаем смазку
+					setPumpOff();
+					OdoInt = 100000; 					//задаем периодичность 100км (защита от ошибок)
 				}
-			} else            //Если скорость меньше минимальной скорости смазки
-			{
-				digitalWrite(PumpP, LOW);   //Выключаем насос (защита от ошибок)
-				ActlVal.PumpStat = false; //Переводим статус насоса в "выключен"
+				else { 									//Если скорость выше городской (едем по трассе)
+					OdoInt = Stgs.MIntervalRoad; //задаем периодичность смазки для трассы
+					if (Stgs.MODE_MILAGE == 20)	// Если режим дождя
+						OdoInt = OdoInt / ((100 + Stgs.MCoefRain) / 100); //Если активирован режим дождя, то увеличиваем переодичность уменьшая OdoInt на заданный %
+				}
+			}
+			else { //Если скорость городская
+				OdoInt = Stgs.MIntervalTown; //задаем периодичность смазки для города
+				if (Stgs.MODE_MILAGE == 20)
+					OdoInt = OdoInt / ((100 + Stgs.MCoefRain) / 100); //Если активировани режим дождя, то увеличиваем переодичность уменьшая OdoInt на заданный %
+			}
+			//запускаем функцию управления насосом
+			if (ActlVal.gps_speed > Stgs.MMinSpeed 	//Если скорость больше минимальной скорости смазки
+			&& ActlVal.gps_DistFromLastOiling > OdoInt) {		// сравниваем растояние и запускаем импульс смазки
+				setPumpImp();
+				ActlVal.PUMP_count++;
+			}
+			else { //Если скорость меньше минимальной скорости смазки
+				setPumpOff();
 				OdoInt = 100000; //задаем периодичность 100км (защита от ошибок)
 			}
 			break;
 		}
 		if (Stgs.MODE_MILAGE == 30) {            //Если выключили
-			digitalWrite(PumpP, LOW);       //Выключаем насос (защита от ошибок)
-			ActlVal.PumpStat = false; //Переводим статус насоса в "выключен"
+			setPumpOff();
 			OdoInt = 100000;     //задаем периодичность 100км (защита от ошибок)
 		}
 		break;
 
-		//Режим "По таймеру"  Принудительная смазка по интервалу времени
-	case 2:		// MODE_TIMER
+	case 2:	// MODE_TIMER //Режим "По таймеру"  Принудительная смазка по интервалу времени
 		if (MODEprev != Stgs.MODE) {
 			MODEprev = Stgs.MODE;
 			timerBetweenImpulses.reset();
 			Web_SendSettingsData();
-#ifdef DEBUG
-			Serial.printf("\nMODE=2..");
-#endif
+			ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку
+			Logger_printad("Oiler", "MODE=2..");
 		}
-		ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку
-		timerImpulseDuration.setPeriod(Stgs.DurationImp);// Устанавливаем длительность импульса включения (из настроек)
+
+		timerImpulseDuration.setPeriod(Stgs.DurationImp); // Устанавливаем длительность импульса включения (из настроек)
 
 		if (Stgs.MODE_TIMER == 40) {
 			ActlVal.TimeLeft = 0; //запоминаем остаток времени до смазки
 
-			digitalWrite(PumpP, LOW);  //выключаем насос
-			ActlVal.PumpStat = false; //Переводим статус насоса в "выключен"
-		} else {
-			switch (Stgs.MODE_TIMER)
-			{ //В зависимости от выбранного интервала текущего режима:
+			setPumpOff();
+		}
+		else {
+			switch (Stgs.MODE_TIMER) { //В зависимости от выбранного интервала текущего режима:
 			case 10:
-				ActlVal.TimeLeft = Stgs.TIntervalTown
-				        - timerBetweenImpulses.getTimeLeft() / 1000; //запоминаем остаток времени до смазки
+				ActlVal.TimeLeft = Stgs.TIntervalTown - timerBetweenImpulses.getTimeLeft() / 1000; //запоминаем остаток времени до смазки
 				timerBetweenImpulses.setPeriod(Stgs.TIntervalTown * 1000);
 				break;
 			case 20:
-				ActlVal.TimeLeft = Stgs.TIntervalRoad
-				        - timerBetweenImpulses.getTimeLeft() / 1000; //запоминаем остаток времени до смазки
+				ActlVal.TimeLeft = Stgs.TIntervalRoad - timerBetweenImpulses.getTimeLeft() / 1000; //запоминаем остаток времени до смазки
 				timerBetweenImpulses.setPeriod(Stgs.TIntervalRoad * 1000);
 				break;
 			case 30:
-				ActlVal.TimeLeft = Stgs.TIntervalRain
-				        - timerBetweenImpulses.getTimeLeft() / 1000; //запоминаем остаток времени до смазки
+				ActlVal.TimeLeft = Stgs.TIntervalRain - timerBetweenImpulses.getTimeLeft() / 1000; //запоминаем остаток времени до смазки
 				timerBetweenImpulses.setPeriod(Stgs.TIntervalRain * 1000);
 				break;
 			case 40:
@@ -252,157 +228,69 @@ void Oiling()
 
 			if (timerBetweenImpulses.ready()) { //проверяем не прошел ли нужный интервал, если прошел то начинаем новый импульс
 				Pprev_ms = Pcur_ms;          // сохраняем время начала импульса
-				digitalWrite(PumpP, HIGH);   //Включаем насос
-#ifdef DEBUG
-				if (ActlVal.PumpStat == false)
-					Serial.println("ActualValuesVO.PumpStat = true;  ");
-#endif
-				ActlVal.PumpStat = true;    //запоминаем состояние насоса
-				timerImpulseDuration.reset();
-
-			} else {                        //если импульс еще не окончился, то
+				setPumpImp();
+				ActlVal.PUMP_count++;
+				Logger_printadln("Main", "ActlVal.PumpStat = " + ActlVal.PumpStat ? "true" : "false");
+			}
+			else {                        //если импульс еще не окончился, то
 				if (timerImpulseDuration.ready()) { //проверяем, достаточное ли время отработал насос
-					digitalWrite(PumpP, LOW); //если достаточно - выключаем насос
-
-#ifdef DEBUG
-					if (ActlVal.PumpStat == true)
-						Serial.println("ActualValuesVO.PumpStat = false;  ");
-#endif
-					ActlVal.PumpStat = false; //Переводим статус насоса в "выключен"
-
+					Logger_printadln("Main", "ActlVal.PumpStat = " + ActlVal.PumpStat ? "true" : "false");
+					setPumpOff(); //Переводим статус насоса в "выключен"
 				}
 			}
 		}
-//		case 10:                         //10-TOWN
-//			Pcur_ms = millis();            //Запомнили текущее время
-//
-//			ActualValuesVO.TimeLeft = (SettingsVO.TIntervalTown
-//					- (Pcur_ms - Pprev_ms) / 1000); //запоминаем остаток времени до смазки
-//
-//			if ((Pcur_ms - Pprev_ms) > (SettingsVO.TIntervalTown * 1000)) { //проверяем не прошел ли нужный интервал, если прошел то начинаем новый импульс
-//				Pprev_ms = Pcur_ms;          // сохраняем время начала импульса
-//				digitalWrite(PumpP, HIGH);   //Включаем насос
-//				ActualValuesVO.PumpStat = true;    //запоминаем состояние насоса
-//			} else {                        //если импульс еще не окончился, то
-//				if (Pcur_ms - Pprev_ms > SettingsVO.DurationImp) { //проверяем, достаточное ли время отработал насос
-//					digitalWrite(PumpP, LOW); //если достаточно - выключаем насос
-//					ActualValuesVO.PumpStat = false; //Переводим статус насоса в "выключен"
-//				}
-//			}
-//			break;
-//		case 20:         //20-ROAD
-//			Pcur_ms = millis(); //Запомнили текущее время
-//
-//			ActualValuesVO.TimeLeft = (SettingsVO.TIntervalRoad
-//					- (Pcur_ms - Pprev_ms) / 1000); //запоминаем остаток времени до смазки
-//
-//			if (Pcur_ms - Pprev_ms > (SettingsVO.TIntervalRoad * 1000)) { //проверяем не прошел ли нужный интервал, если прошел то начинаем новый импульс
-//				Pprev_ms = Pcur_ms;     // сохраняем время начала импульса
-//				digitalWrite(PumpP, HIGH);            //Включаем насос
-//				ActualValuesVO.PumpStat = true;    //запоминаем состояние насоса
-//			} else { //если импульс еще не окончился, то
-//				if (Pcur_ms - Pprev_ms > SettingsVO.DurationImp) { //проверяем, достаточное ли время отработал насос
-//					digitalWrite(PumpP, LOW); //если достаточно - выключаем насос
-//					ActualValuesVO.PumpStat = false; //Переводим статус насоса в "выключен"
-//				}
-//			}
-//
-//			break;
-//		case 30:         //30-RAIN
-//			Pcur_ms = millis(); //Запомнили текущее время
-//
-//			ActualValuesVO.TimeLeft = (SettingsVO.TIntervalRain
-//					- (Pcur_ms - Pprev_ms) / 1000); //запоминаем остаток времени до смазки
-//
-//			if ((Pcur_ms - Pprev_ms) > (SettingsVO.TIntervalRain * 1000)) { //проверяем не прошел ли нужный интервал, если прошел то начинаем новый импульс
-//				Pprev_ms = Pcur_ms;     // сохраняем время начала импульса
-//				digitalWrite(PumpP, HIGH);            //Включаем насос
-//				ActualValuesVO.PumpStat = true;    //запоминаем состояние насоса
-//
-//				Serial.println("ActualValuesVO.PumpStat = true;  ");
-//			} else { //если импульс еще не окончился, то
-//				if (Pcur_ms - Pprev_ms > SettingsVO.DurationImp) { //проверяем, достаточное ли время отработал насос
-//					digitalWrite(PumpP, LOW); //если достаточно - выключаем насос
-//					ActualValuesVO.PumpStat = false; //Переводим статус насоса в "выключен"
-//
-//					Serial.println("ActualValuesVO.PumpStat = false;  ");
-//				}
-//			}
-//			break;
-//
-//		default:
-//			break;
-//		}
 		break;
 
-		//Режим "PUMP"  Принудительная подача заданного количества импульсов
-	case 3:
+	case 3: //Режим "PUMP"  Принудительная подача заданного количества импульсов
 		if (MODEprev != Stgs.MODE) {
 			ActlVal.PUMP_count = Stgs.PNumberImp;
 			timerBetweenImpulses.reset();
 			MODEprev = Stgs.MODE;
 			Web_SendSettingsData();
-#ifdef DEBUG
-			Serial.printf("\nMODE=3.. PUMP_count=");
-			Serial.println(String(ActlVal.PUMP_count));
-#endif;
+			Logger_printad("Oiler", "MODE=3.. PUMP_count=");
+			Logger_printadln("Main", String(ActlVal.PUMP_count));
 		}
 
 		ActlVal.TimeLeft = timerBetweenImpulses.getTimeLeft() / 1000; //запоминаем остаток времени до смазки
-		timerImpulseDuration.setPeriod(Stgs.DurationImp);// Устанавливаем длительность импульса включения (из настроек)
+		timerImpulseDuration.setPeriod(Stgs.DurationImp); // Устанавливаем длительность импульса включения (из настроек)
 		timerBetweenImpulses.setPeriod(Stgs.PImpInterval);
 
 		if (ActlVal.PUMP_count > 0) {
 			if (timerBetweenImpulses.ready()) { //проверяем не прошел ли нужный интервал, если прошел то начинаем новый импульс
-				digitalWrite(PumpP, HIGH);               	// Включаем насос
-				ActlVal.PumpStat = true;    //запоминаем состояние насоса
-				timerImpulseDuration.reset();
-
-#ifdef DEBUG
-				if (ActlVal.PumpStat == false)
-					Serial.println("ActualValuesVO.PumpStat = true;  ");
-#endif
-
-			} else { 						//если импульс еще не окончился, то
+				setPumpImp();
+				Logger_printadln("Main", "ActlVal.PumpStat = " + ActlVal.PumpStat ? "true" : "false");
+			}
+			else { 						//если импульс еще не окончился, то
 				if (timerImpulseDuration.ready()) { //проверяем, достаточное ли время отработал насос
 					if (ActlVal.PumpStat == true) {
-						digitalWrite(PumpP, LOW); //если достаточно - выключаем насос
+						setPumpOff();
 
-						ActlVal.PumpStat = false; //Переводим статус насоса в "выключен"
 						ActlVal.PUMP_count--;
 
-#ifdef DEBUG
-						if (ActlVal.PumpStat == true)
-							Serial.println(
-									"ActualValuesVO.PumpStat = false;  ");
-						Serial.printf("\nMODE=3.. PUMP_count=");
-												Serial.println(String(ActlVal.PUMP_count));
-#endif
+						Logger_printadln("Main", "ActlVal.PumpStat = " + ActlVal.PumpStat ? "true" : "false");
+						Logger_printad("Oiler", "MODE=3.. PUMP_count=");
+						Logger_printadln("Main", String(ActlVal.PUMP_count));
 					}
 				}
 			}
-		} else {
+		}
+		else {
 			// Когда пркоачка закончилась - переводим в предыдущий режим? или выключаем?
-			Serial.printf(
-			        "\nMODE=3.. PUMP_count=0. So pump finished. Set MODE = OFF");
+			Logger_printad("Oiler", "\nMODE=3.. PUMP_count=0. So pump finished. Set MODE = OFF");
 			Stgs.MODE = 4;
 		}
 		break;
 
-		//Режим "OFF" - Выключение всех режимов смазки
-	case 4:
+	case 4: //Режим "OFF" - Выключение всех режимов смазкиF
 		if (MODEprev != Stgs.MODE) {
 			MODEprev = Stgs.MODE;
 			Web_SendSettingsData();
-#ifdef DEBUG
-			Serial.printf("\nMODE=4..");
-#endif
+			Logger_printad("Oiler", "MODE=4..");
 		}
-//		Serial.printf("\nMODE=4..");
+//		Logger_printad("Oiler", "MODE=4..");
 		ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку
 		ActlVal.TimeLeft = 0; //запоминаем остаток времени до смазки
-		digitalWrite(PumpP, LOW);  //выключаем насос (защита от ошибок)
-		ActlVal.PumpStat = false;  //Переводим статус насоса в "выключен"
+		setPumpOff();
 		break;
 	}
 	MODEprev = Stgs.MODE;
@@ -413,8 +301,7 @@ void Oiling()
 //----------------------------------------------------------------------
 //для индикации используется RGB светодиод с общим анодом (общий "+")
 //для замены на диод с общим катодом, заменить все LOW на HIGH и наоборот HIGH на LOW.
-void Indicator()
-{
+void indicatorLoop() {
 	/* if (ActualValuesVO.PumpStat == true) {     //если насос включен, включаем красный диод не зависимо от текущего режима
 	 digitalWrite(DR, LOW);    //включаем красный
 	 digitalWrite(DB, HIGH);   //выключаем синий
@@ -528,81 +415,46 @@ void Indicator()
 	 }
 	 */
 
-	int timeoff = 1000;    // Длительность состояния диода индикации "выключено"
-	switch (Stgs.MODE)
-	{
-	case 1:                        //По пробегу
-		currentInd = millis();        //запоминаем текущее время
-		if (ActlVal.PowerIndStat) {
-			if (currentInd - previousInd > 500) { //если прошло 0,5сек (интервал мигания)
-				previousInd = currentInd;
-				digitalWrite(PowerInd, LOW);    //включаем
-				ActlVal.PowerIndStat = false;
-			}
-		} else {
-			if (currentInd - previousInd > timeoff) { //если прошло 0,5сек (интервал мигания)
-				previousInd = currentInd;
-				digitalWrite(PowerInd, HIGH);    //включаем
-				ActlVal.PowerIndStat = true;
-			}
-		}
-		PowerIndCnt = 0;
+}
 
-		break;
-	case 2:                        // по Таймеру
-		currentInd = millis();
-		if (ActlVal.PowerIndStat) {
-			if (currentInd - previousInd > 500) { //если прошло 0,5сек (интервал мигания)
-				previousInd = currentInd;
-				digitalWrite(PowerInd, LOW);    //включаем
-				ActlVal.PowerIndStat = false;
-				if (PowerIndCnt < 3) {
-					timeoff = 300; // 2 мырга
-					PowerIndCnt++;
-				} else {
-					timeoff = 1000;
-					PowerIndCnt = 0;
-				}
-			}
-		} else {
-			if (currentInd - previousInd > timeoff) { //если прошло 0,5сек (интервал мигания)
-				previousInd = currentInd;
-				digitalWrite(PowerInd, HIGH);    //включаем
-				ActlVal.PowerIndStat = true;
-			}
+//----------------------------------------------------------------------
+//             Функция индикации текущего режима работы
+//----------------------------------------------------------------------
+void powerIndLoop() {
+	if (PowerIndCnt < Stgs.MODE)
+		timeoff = 150; //
+	if (Stgs.MODE == 4)
+		ActlVal.PowerIndStat = true;
+
+	if (ActlVal.PowerIndStat) {
+		timerPowerInd.setPeriod(300);
+		digitalWrite(PowerInd, LOW);    //включаем
+		if (timerPowerInd.ready()) {
+			ActlVal.PowerIndStat = false;
+			timerPowerInd.reset();
 		}
-		break;
-	case 3:                        //"Выкл" -
-		currentInd = millis();
-		if (ActlVal.PowerIndStat) {
-			if (currentInd - previousInd > 500) { //если прошло 0,5сек (интервал мигания)
-				previousInd = currentInd;
-				digitalWrite(PowerInd, LOW);    //включаем
-				ActlVal.PowerIndStat = false;
-				if (PowerIndCnt < 4) {
-					timeoff = 300;
-					PowerIndCnt++;
-				} else {
-					timeoff = 1000;
-					PowerIndCnt = 0;
-				}
-			}
-		} else {
-			if (currentInd - previousInd > timeoff) { //если прошло 0,5сек (интервал мигания)
-				previousInd = currentInd;
-				digitalWrite(PowerInd, HIGH);    //включаем
-				ActlVal.PowerIndStat = true;
-			}
+	}
+	else {
+		digitalWrite(PowerInd, HIGH);    //включаем
+		timerPowerInd.setPeriod(timeoff);
+		if (timerPowerInd.ready()) { //(интервал мигания)
+			ActlVal.PowerIndStat = true;
+			timerPowerInd.reset();
+
+			PowerIndCnt++;
 		}
-		break;
+
+		if (PowerIndCnt == Stgs.MODE)
+			timeoff = 1500;
+		if (PowerIndCnt > Stgs.MODE)
+			PowerIndCnt = 1;
 	}
 }
 
 //----------------------------------------------------------------------
 //             Функция обрабатывающая команды нажатий кнопки
 //----------------------------------------------------------------------
-void serialHandler()
-{
+void buttonHandler() {
 	char inChar;
 	if (bouncer1.update()) //если произошло событие, кнопка Режим изменила свое состояние
 	{
@@ -612,21 +464,20 @@ void serialHandler()
 		{
 			if ((millis() - pressed_moment1) < pressed_long) // если кнопка была нажата кратковременно - меняем режим:
 			{
-				switch (Stgs.MODE)
-				{ //Переключаем интервал текущего режима
+				switch (Stgs.MODE) { //Переключаем интервал текущего режима
 				case 1:             //1-MILAGE
 					Stgs.MODE_MILAGE = Stgs.MODE_MILAGE + 10; //переключаем текущий интервал режима MILAGE
-					events.send(Stgs.getSettingsJSON_String().c_str(),
-					        "new_settings", millis());
-					if (Stgs.MODE_MILAGE > 30) Stgs.MODE_MILAGE = 10; //перебор по кругу
+					events.send(Stgs.getSettingsJSON_String().c_str(), "new_settings", millis());
+					if (Stgs.MODE_MILAGE > 30)
+						Stgs.MODE_MILAGE = 10; //перебор по кругу
 
 					ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку
 					break;
 				case 2:             //2-TIMER
 					Stgs.MODE_TIMER = Stgs.MODE_TIMER + 10; //переключаем текущий интервал режима TIMER
-					events.send(Stgs.getSettingsJSON_String().c_str(),
-					        "new_settings", millis());
-					if (Stgs.MODE_TIMER > 40) Stgs.MODE_TIMER = 10; //перебор по кругу
+					events.send(Stgs.getSettingsJSON_String().c_str(), "new_settings", millis());
+					if (Stgs.MODE_TIMER > 40)
+						Stgs.MODE_TIMER = 10; //перебор по кругу
 
 					ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку
 					break;
@@ -635,7 +486,9 @@ void serialHandler()
 						ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку
 						digitalWrite(PumpP, LOW);  // выключаем насос
 						ActlVal.PumpStat = false; //Переводим статус насоса в "выключен"
-					} else ActlVal.PUMP_count = Stgs.PNumberImp; //запускаем цикл прокачки
+					}
+					else
+						ActlVal.PUMP_count = Stgs.PNumberImp; //запускаем цикл прокачки
 					break;
 				case 4:      //4-OFF в режиме OFF ни как не реагируем на нажатие
 					ActlVal.PUMP_count = 0; //Обнуляем оставшееся количество импульсов прокачки, останавливая прокачку
@@ -643,13 +496,14 @@ void serialHandler()
 				default:
 					break;
 				}
-			} else //удержание
+			}
+			else //удержание
 			{
 				//ДЕЙСТВИЕ НА УДЕРЖАНИЕ КНОПКИ
 				Stgs.MODE = Stgs.MODE + 1; //переключаем  режим
-				events.send(Stgs.getSettingsJSON_String().c_str(),
-				        "new_settings", millis());
-				if (Stgs.MODE > 4) Stgs.MODE = 1; //перебор режимов по кругу
+				events.send(Stgs.getSettingsJSON_String().c_str(), "new_settings", millis());
+				if (Stgs.MODE > 4)
+					Stgs.MODE = 1; //перебор режимов по кругу
 			}
 		}
 	}
@@ -660,10 +514,9 @@ void serialHandler()
 //----------------------------------------------------------------------
 //             Initialize LittleFS
 //----------------------------------------------------------------------
-void initFS()
-{
+void initFS() {
 #ifdef DEBUG
-	Serial.println(
+	Logger_printadln("Main",
 			LittleFS.begin() ?
 					"LittleFS mounted successfully" :
 					"An error has occurred while mounting LittleFS!");

@@ -14,7 +14,6 @@ function updateElementsValuesById(objData) {
 			document.getElementById("_MODE_SWITCH_4").className = "pure-button pure-button-primary";
 			document.getElementById("_MODE_SWITCH_" + objData[obj]).className = "button-active pure-button";
 		}
-
 		if (obj == "MODE_MILAGE") {
 			document.getElementById("_MODE_MILAGE_SWITCH_10").className = "pure-button pure-button-primary";
 			document.getElementById("_MODE_MILAGE_SWITCH_20").className = "pure-button pure-button-primary";
@@ -28,19 +27,15 @@ function updateElementsValuesById(objData) {
 			document.getElementById("_MODE_TIMER_SWITCH_40").className = "pure-button pure-button-primary";
 			document.getElementById("_MODE_TIMER_SWITCH_" + objData[obj]).className = "button-active pure-button";
 		}
-		if (obj == "gps_fixmode") {
+		if (obj == "gps_fixmode") { 	// Формирование отображения состояния фиксации
 			if (document.getElementById("_gps_fixmode_btn")) {
-				if (objData[obj] == "2") {
+				if (parseInt(objData[obj]) > 0) {
 					document.getElementById("_gps_fixmode_btn").className = "button-active pure-button";
-					document.getElementById("_gps_fixmode_btn").innerText = "2D";
+					document.getElementById("_gps_fixmode_btn").innerText = "Fix - OK";
 				}
-				else if (objData[obj] == "3") {
-					document.getElementById("_gps_fixmode_btn").className = "button-active pure-button";
-					document.getElementById("_gps_fixmode_btn").innerText = "3D";
-				}
-				else if (objData[obj] == "1") {
+				else if (parseInt(objData[obj]) <= 0) {
 					document.getElementById("_gps_fixmode_btn").className = "pure-button pure-button-primary";
-					document.getElementById("_gps_fixmode_btn").innerText = "No Fix";
+					document.getElementById("_gps_fixmode_btn").innerText = "No Fix!";
 				}
 				else {
 					document.getElementById("_gps_fixmode_btn").className = "pure-button pure-button-primary";
@@ -48,9 +43,27 @@ function updateElementsValuesById(objData) {
 				}
 			}
 		}
+		
+		if (obj == "gps_connect") { 	// Формирование отображения состояния фиксации
+			if (document.getElementById("_gps_connect_btn")) {
+				if (objData[obj] == "1") {
+					document.getElementById("_gps_connect_btn").className = "button-active pure-button";
+					document.getElementById("_gps_connect_btn").innerText = "Связь с датчиком: ОК";
+				}
+				else if (objData[obj] == "0") {
+					document.getElementById("_gps_connect_btn").className = "pure-button pure-button-primary";
+					document.getElementById("_gps_connect_btn").innerText = "Нет связи с датчиком!";
+				}
+				else {
+					document.getElementById("_gps_connect_btn").className = "pure-button pure-button-primary";
+					document.getElementById("_gps_connect_btn").innerText = "NA";
+				}
+			}
+		}
 
 
-		//else { // остальные пытаемся установить по ID
+
+		//else // остальные пытаемся установить по ID
 		//console.log("_" + obj + " > " + objData[obj] + " (type: " + typeof objData[obj] + ")");
 		if (typeof objData[obj] == 'string' || typeof objData[obj] == 'number') {
 			try {
@@ -71,7 +84,6 @@ function updateElementsValuesById(objData) {
 			console.log("Not String or Number type of value! Skip!");
 		}
 	}
-	//}
 }
 
 // Create Temperature Gauge
@@ -122,7 +134,7 @@ function updateElementsValuesById(objData) {
 	animationRule: "linear",
 	barWidth: 10,
 }).draw();
-
+	
 // Create Humidity Gauge
 var gaugeHum = new RadialGauge({
 	renderTo: 'gauge-humidity',
@@ -142,7 +154,7 @@ var gaugeHum = new RadialGauge({
 		"60",
 		"80",
 		"100"
-
+	
 	],
 	minorTicks: 4,
 	strokeTicks: true,

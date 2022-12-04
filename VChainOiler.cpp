@@ -1,4 +1,4 @@
-#define DEBUG 1               // Флаг отладочных сообщений
+//#define DEBUG 1               // Флаг отладочных сообщений
 
 // Do not remove the include below
 #include "VChainOiler.h"
@@ -8,44 +8,36 @@
 //----------------------------------------------------------------------
 //             Функция настроек при включении
 //----------------------------------------------------------------------
-void setup()
-{
-  Serial.begin(115200);                 // инициализация порта
-//	Serial.begin(4800);                 // инициализация порта
-	delay(10);
-	Serial.setTimeout(100);
+void setup() {
 #ifdef DEBUG
-  Serial.println("\n");
-  Serial.println("//----------------------------------------------------------------------");
-  Serial.println("//             VOiler, 2022.");
-  Serial.println("//           program starting..");
-  Serial.println("//----------------------------------------------------------------------");
+	Serial.begin(115200);                 // инициализация порта
+//	Serial.begin(4800);                 // инициализация порта
+	//delay(500);
+	//Serial.setTimeout(200);
 #endif
 
-#ifdef DEBUG
-  Serial.printf("\nInitialize File System..\n");
-#endif
+	delay (2000);
+	Logger_printadln("Main", "");
+	Logger_printadln("Main", "//----------------------------------------------------------------------");
+	Logger_printadln("Main", "//             VOiler, 2022.");
+	Logger_printadln("Main", "//           program starting..");
+	Logger_printadln("Main", "//----------------------------------------------------------------------");
+
+	Logger_printadln("Main", "Initialize File System..");
 	initFS();
 
-#ifdef DEBUG
-  Serial.printf("\nLoad saved settings..\n");
-#endif
+	Logger_printadln("Main", "Load saved settings..");
 	Stgs.LoadSettings();             //Initialize saved settings values
 //  SettingsVO.MODEprev = 0;
 
-#ifdef DEBUG
-  Serial.printf("\nInitialize WiFi..\n");
-#endif
+
+	Logger_printadln("Main", "Initialize WiFi..");
 	initWiFi();
 
-#ifdef DEBUG
-  Serial.printf("\nInitialize Web Server..\n");
-#endif
+	Logger_printadln("Main", "Initialize Web Server..");
 	initWebServer();
 
-#ifdef DEBUG
-  Serial.printf("\nInitialize GPS..\n");
-#endif
+	Logger_printadln("Main", "Initialize GPS..");
 	initGPS();
 
 	// Настройка пинов светового индикатора
@@ -73,9 +65,7 @@ void setup()
 	//digitalWrite(PumpP, LOW);
 	pinMode(PowerInd, OUTPUT); // Установка режима работы пина управления насосом
 
-#ifdef DEBUG
-  Serial.printf("\nSetup() finished.\n");
-#endif
+	Logger_printad("Main", "Setup() finished.\n");
 }
 
 //----------------------------------------------------------------------
@@ -83,13 +73,24 @@ void setup()
 //             Функция основного цикла
 //
 //----------------------------------------------------------------------
-void loop()
-{
-	serialHandler();              //вызов функции обрабатывающей команды нажатий
-//	Speedometer();  //В режиме MILAGE вызывается функция замера текущей скорости
-	Oiling();                       //Вызов функции смазки
-	Indicator();                    //Вызов функции индикатора текущего режима
+void loop() {
+	Logger_printad("Main", "Main Loop() start.\n");
+	buttonHandler();              //вызов функции обрабатывающей команды нажатий
+//	Odometer();  //В режиме MILAGE вызывается функция замера текущей скорости
+
+	dnsServerLoop();				// Обработка DNS запросов
 	WebEvents();                    // Обработка событий для веб-сервера
-	GPSMainLoop();
-//  delay(5);                      //Спать 10мс
+	GPSMainLoop();					// Обновление данных GPS
+
+	//Для теста:
+//	ActlVal.gps_DistFromLastOiling += 0.4;
+//	ActlVal.gps_speed = 24.5;
+	oilingCalc();                   // Вызов функции смазки
+
+	indicatorLoop();                    //Вызов функции индикатора текущего режима
+	powerIndLoop();					//Вызов функции индикатора текущего режима
+	pumpProcessLoop();				// Функция управления импульсами насоса.
+	//Logger_printad("Main", "Main Loop() finish.\n");
+
+
 }

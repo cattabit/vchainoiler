@@ -14,36 +14,46 @@
 #include <ESP8266WiFi.h>
 #include <IPAddress.h>
 #include "ActualValuesVOiler.h"
+#include "./DNSServer.h"
 
-// Replace with your network credentials
+// WiFi Network parameters
 const char *ssid = "VOilWiFi";
 const char *password = "89268302305";
+
+const byte DNS_PORT = 53;          // Capture DNS requests on port 53
 
 IPAddress local_IP(192, 168, 1, 1);
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
+
+DNSServer dnsServer;              // Create the DNS object
 
 //----------------------------------------------------------------------
 //             Initialize WiFi
 //----------------------------------------------------------------------
 void initWiFi() {
 #ifdef DEBUG
-	Serial.print("Setting soft-AP configuration ... ");
-	Serial.println(
-			WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
+	Logger_printad("WiFi", "Setting soft-AP configuration ... ");
+	Logger_println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
 
-	Serial.print("Setting soft-AP ... ");
-	Serial.println(WiFi.softAP(ssid, password) ? "Ready" : "Failed!");
-	//WiFi.softAP(ssid);
-	//WiFi.softAP(ssid, password, channel, hidden, max_connection)
+	Logger_printad("WiFi", "Setting soft-AP ... ");
+	Logger_println(WiFi.softAP(ssid, password) ? "Ready" : "Failed!");
 
-	Serial.print("Soft-AP IP address = ");
-	Serial.println(WiFi.softAPIP());
+	Logger_printad("WiFi", "Soft-AP IP address = ");
+	//WiFi.softAPIP();
+	Logger_println(WiFi.softAPIP().toString());
 #else
-  WiFi.softAPConfig(local_IP, gateway, subnet);
-  WiFi.softAP(ssid, password);
-  WiFi.softAPIP();
+	WiFi.softAPConfig(local_IP, gateway, subnet);
+	WiFi.softAP(ssid, password);
+
+	// if DNSServer is started with "*" for domain name, it will reply with
+	// provided IP to all DNS request
+	dnsServer.start(DNS_PORT, "*", local_IP);
 #endif
+}
+
+void dnsServerLoop() {
+	dnsServer.processNextRequest();
 }
 
 #endif /* WIFI_H_ */

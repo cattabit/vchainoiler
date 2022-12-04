@@ -29,15 +29,15 @@ static void print_str(const char *str, int len);
 void initGPS() {
 	//Serial.begin(115200);
 
-	Serial.print("Testing TinyGPS library v. ");
-	Serial.println(TinyGPS::library_version());
-	Serial.println("by Mikal Hart");
-	Serial.println();
-	Serial.println(
+	Logger_printad("TinyGPS", "Testing TinyGPS library v. ");
+	Logger_printadln("TinyGPS", TinyGPS::library_version());
+	Logger_printadln("TinyGPS", "by Mikal Hart");
+	Logger_printadln("TinyGPS", );
+	Logger_printadln("TinyGPS",
 			"Sats HDOP Latitude  Longitude  Fix  Date       Time     Date Alt    Course Speed Card  Distance Course Card  Chars Sentences Checksum");
-	Serial.println(
+	Logger_printadln("TinyGPS",
 			"          (deg)     (deg)      Age                      Age  (m)    --- from GPS ----  ---- to London  ----  RX    RX        Fail");
-	Serial.println(
+	Logger_printadln("TinyGPS",
 			"-------------------------------------------------------------------------------------------------------------------------------------");
 
 	gpsSerial.begin(9600);
@@ -84,7 +84,7 @@ void GPSMainLoop() {
 		print_int(chars, 0xFFFFFFFF, 6);
 		print_int(sentences, 0xFFFFFFFF, 10);
 		print_int(failed, 0xFFFFFFFF, 9);
-		Serial.println();
+		Logger_printadln("TinyGPS", );
 
 		smartdelay(1000);
 	}
@@ -104,15 +104,15 @@ static void smartdelay(unsigned long ms) {
 static void print_float(float val, float invalid, int len, int prec) {
 	if (val == invalid) {
 		while (len-- > 1)
-			Serial.print('*');
-		Serial.print(' ');
+			Logger_printad("TinyGPS", '*');
+		Logger_printad("TinyGPS", ' ');
 	} else {
-		Serial.print(val, prec);
+		Logger_printad("TinyGPS", val, prec);
 		int vi = abs((int) val);
 		int flen = prec + (val < 0.0 ? 2 : 1); // . and -
 		flen += vi >= 1000 ? 4 : vi >= 100 ? 3 : vi >= 10 ? 2 : 1;
 		for (int i = flen; i < len; ++i)
-			Serial.print(' ');
+			Logger_printad("TinyGPS", ' ');
 	}
 	smartdelay(0);
 }
@@ -128,7 +128,7 @@ static void print_int(unsigned long val, unsigned long invalid, int len) {
 		sz[i] = ' ';
 	if (len > 0)
 		sz[len - 1] = ' ';
-	Serial.print(sz);
+	Logger_printad("TinyGPS", sz);
 	smartdelay(0);
 }
 
@@ -139,12 +139,12 @@ static void print_date(TinyGPS &gps) {
 	gps.crack_datetime(&year, &month, &day, &hour, &minute, &second,
 			&hundredths, &age);
 	if (age == TinyGPS::GPS_INVALID_AGE)
-		Serial.print("********** ******** ");
+		Logger_printad("TinyGPS", "********** ******** ");
 	else {
 		char sz[32];
 		sprintf(sz, "%02d/%02d/%02d %02d:%02d:%02d ", month, day, year, hour,
 				minute, second);
-		Serial.print(sz);
+		Logger_printad("TinyGPS", sz);
 	}
 	print_int(age, TinyGPS::GPS_INVALID_AGE, 5);
 	smartdelay(0);
@@ -153,7 +153,7 @@ static void print_date(TinyGPS &gps) {
 static void print_str(const char *str, int len) {
 	int slen = strlen(str);
 	for (int i = 0; i < len; ++i)
-		Serial.print(i < slen ? str[i] : ' ');
+		Logger_printad("TinyGPS", i < slen ? str[i] : ' ');
 	smartdelay(0);
 }
 

@@ -12,7 +12,7 @@ mkspiffs:
 	@echo Install via `brew install esptool`
 	"${runtime.tools.python3.path}/python3" "$(runtime.tools.esptool)" --chip esp8266 \
 		--port $(serial.port) \
-		--baud 115200 \
+		--baud 921600 \
 		--before default_reset \
 		--after hard_reset \
 		write_flash 0x00200000 $(PWD)\mkspiffs.bin
@@ -29,7 +29,7 @@ mklittlefs:
 	@echo Install via `brew install esptool`
 	"${runtime.tools.python3.path}/python3" "$(runtime.tools.esptool)" --chip esp8266 \
 		--port $(serial.port) \
-		--baud 921600 \
+		--baud 115200 \
 		--before default_reset \
 		--after hard_reset \
 		write_flash 0x00200000 $(PWD)\mklittlefs.bin

@@ -13,128 +13,114 @@
 
 #pragma once
 #include <SoftwareSerial.h>
-#include "TinyGPS++.h"
+#include <TinyGPS++.h>
 #include "ActualValuesVOiler.h"
 #include "SettingsVOoiler.h"
 
-float latPrev = 28.5458, lngPrev = 77.1703; // create variable for latitude and longitude object
+float latPrev = 56.7558, lngPrev = 37.1503; // create variable for latitude and longitude object
 TinyGPSPlus gps;                  // create gps object
+TinyGPSCustom fixmode(gps, "GNGGA", 6); // Значение режима фиксации
+	//0 — Определение местоположения не возможно или не верно;
+	//1 — GPS режим обычной точности, возможно определение местоположения;
+	//2 — Дифференциальный GPS режим, точность обычная, возможно определение местоположения;
+	//3— GPS режим прецизионной точности, возможно определение местоположения.
+
 SoftwareSerial gpsSerial(12, 13);   //rx,tx pind 3 and 4
 
-Timer timerUpdateGPSValues(1000);
-
-//Custom fields config
-TinyGPSCustom fixmode(gps, "GPGSA", 2); // $GPGSA sentence, Mode: 1=Fix not available, 2=2D, 3=3D
-TinyGPSCustom SVsinView(gps, "GPGSV", 3); // Total number of SVs in view
-TinyGPSCustom SpeedOverGround(gps, "GPVTG", 7); // Speed over ground in kilometers/hour
+Timer timerUpdateGPSValuesCheck(1000);
+Timer timerCheckGPSConnection(1000);
 
 static void smartdelay(unsigned long ms);
+static bool getNewGPSData();
 
-unsigned long odo = 0UL; 			// Odometer, when speed over 20km/h
-double distanceToPrev = 0.0; // distance to last valid point / Дистанция до прошлой валидной точки, используется для расчета пробега между смазками
+
+
+
 
 //----------------------------------------------------------------------
 //             Функция инициализации обмена с приемником GPS
 //----------------------------------------------------------------------
-void initGPS()
-{
-#ifdef DEBUG
-	Serial.print("TinyGPSPlus library v. ");
-	Serial.println(TinyGPSPlus::libraryVersion());
-#endif
+void initGPS() {
+	Logger_printad("TinyGPS", "TinyGPSPlus library v. ");
+	Logger_println(TinyGPSPlus::libraryVersion());
 
-	gpsSerial.begin(4800);
-	odo = 0UL;
+	gpsSerial.begin(9600);
+
+	ActlVal.gps_DistFromLastOiling = 0.0;
+	delay(500);
+
+	timerUpdateGPSValuesCheck.setPeriod(Stgs.gpsUpdatePeriod); // Установка таймера контроля переодичности обновления данных GPS
+	timerCheckGPSConnection.setPeriod(Stgs.gpsUpdatePeriod);
 }
 
 //----------------------------------------------------------------------
 //             Функция получения, обработки, обновления данных GPS
 //----------------------------------------------------------------------
-void GPSMainLoop()
-{
+void GPSMainLoop() {
 
-	// Сохраняем значение качества фиксации местоположения
-	ActlVal.setFixMode(fixmode.value(), fixmode.isValid(), fixmode.age());
-	// Сохраняем значение текущей скорости
-	ActlVal.setGps_speed((float) gps.speed.kmph(), gps.speed.isValid(),
-	        gps.speed.age());
+	// Ожидане получения свежих данных в течении заданного времени
+	//	smartdelay(Stgs.gpsDataWait);
+	if (getNewGPSData()) {
+		timerUpdateGPSValuesCheck.reset(); // Сбрасываем таймер контроля переодичности обновления данных.
+		timerCheckGPSConnection.reset();
+		ActlVal.gps_connect = 1;
+		ActlVal.gps_DiagMsg = "";
 
-	if (SpeedOverGround.isUpdated()) {
-		ActlVal.gps_speedog = atof(SpeedOverGround.value());
-	}
-
-	if (gps.satellites.isUpdated()) {
-//			Serial.print(F("SATELLITES Fix Age="));
-//			Serial.print(gps.satellites.age());
-//			Serial.print(F("ms Value="));
-//			Serial.println(gps.satellites.value());
-
+		// Сохраняем значение качества фиксации местоположения
+		ActlVal.gps_fixmode = atoi(fixmode.value());
+		// Сохраняем значение текущей скорости
+		ActlVal.setGps_speed((float) gps.speed.kmph(), gps.speed.isValid(), gps.speed.age());
 		ActlVal.gps_Satelites = gps.satellites.value();
-	}
+		ActlVal.gps_hdop = gps.hdop.value() / 100.0;
 
-	if (gps.hdop.isUpdated()) {
-//			Serial.print(F("HDOP       Fix Age="));
-//			Serial.print(gps.hdop.age());
-//			Serial.print(F("ms Value="));
-//			Serial.println(gps.hdop.value());
+		if (gps.location.isUpdated()) { // Обновилось значение местоположения
+			if (gps.location.isValid() // если новые данные валидны, и признак fixmode имеет значение (0 = отсутствует фикация положения)
+					&& gps.speed.isValid()	// Данные скорости валидны
+					&& (atoi(fixmode.value()) > 0) // факсция положения есть
+					) {
+				ActlVal.gps_lastpointdist = TinyGPSPlus::distanceBetween(gps.location.lat(), gps.location.lng(), latPrev, lngPrev);// Расчитываем дистанцию от прошлой валидной точки
+				// и сохраняем значение текущей точки
+				latPrev = gps.location.lat();
+				lngPrev = gps.location.lng();
 
-		ActlVal.gps_hdop = gps.hdop.value();
-	}
-
-	if (gps.location.isUpdated()) { // Обновилось значение местоположения
-		ActlVal.gps_SatelitesVisible = String(SVsinView.value());
-
-		if (gps.location.isValid()) {	// если новые данные валидны
-			distanceToPrev = TinyGPSPlus::distanceBetween(gps.location.lat(),
-			        gps.location.lng(), latPrev, lngPrev); // Расчитываем дистанцию от прошлой валидной точки
-			// и сохраняем значение текущей точки
-			latPrev = gps.location.lat();
-			lngPrev = gps.location.lng();
-			ActlVal.gps_lastpointdist = distanceToPrev; // сохраняем расчитнное значение для отображения в интерфейсе
-
-			if (ActlVal.gps_speed > Stgs.gpsMinCalcSpeed // Если значение скорости валидно и скорость больше минимальной для расчета (из настроек)
-			&& (ActlVal.gps_fixmode == 2 || ActlVal.gps_fixmode == 3) // Если фикация GPS корректная (2D или 3D)
-			        ) {
-				odo += distanceToPrev;
-				ActlVal.gps_DistFromLastOiling += distanceToPrev;
-			}
+				if (gps.speed.kmph() > Stgs.gpsMinCalcSpeed && ActlVal.gps_lastpointdist < Stgs.gpsMaxCalcDistance) { // Если скорость больше минимальной для расчета (из настроек)
+					ActlVal.gps_DistFromLastOiling += ActlVal.gps_lastpointdist;
+				}
 
 #ifdef DEBUG
 			Serial.println("");
 			Serial.print(F("	LastValidPoint Distance= "));
-			Serial.print(distanceToPrev, 6);
+			Serial.print(ActlVal.gps_lastpointdist, 6);
 			Serial.print(F(" m	"));
 			Serial.print(F("	SPEED= "));
 			Serial.print(gps.speed.kmph());
 			Serial.print(F(" km/h"));
 			Serial.print(gps.speed.isValid() ? " (OK) " : " (Err) ");
 			Serial.print(F("	FixMode= "));
-			Serial.print(fixmode.value());
-			Serial.print(fixmode.isValid() ? " (OK) " : " (Err) ");
+			Serial.print(gps.fixmode.value());
+			Serial.print(gps.fixmode.isValid() ? " (OK) " : " (Err) ");
 			Serial.print(F("	ODO= "));
-			Serial.print(odo);
+			Serial.print(ActlVal.gps_DistFromLastOiling);
 			Serial.print(F(" m	"));
 #endif
-		} else {
+			}
+			else {
 #ifdef DEBUG
 			Serial.println(F("LOCATION 	InValid"));
 #endif
-		}
-	} // location.isUpdated()
+			}
+		} // location.isUpdated()
 
-	timerUpdateGPSValues.setPeriod(Stgs.gpsUpdatePeriod);
-	// Таймер обновления данных GPS
-	if (timerUpdateGPSValues.ready()) {
+		if (timerUpdateGPSValuesCheck.ready()) { // Таймер контроля обновления данных GPS вышел
 #ifdef DEBUG
 		Serial.println();
 #endif
-		String msg = F("DIAGS Chars=") + String(gps.charsProcessed())
-		        + F(" Sentences-with-Fix=") + String(gps.sentencesWithFix())
-		        + F(" FCS=") + String(gps.failedChecksum()) + F(" PCS=")
-		        + String(gps.passedChecksum());
-		if (gps.charsProcessed() < 10)
-		    msg = F("WARNING: No GPS data.  Check wiring.");
-		ActlVal.gps_DiagMsg = msg;
+			String msg = F("DIAGS Chars=") + String(gps.charsProcessed()) + F(" Sentences-with-Fix=")
+					+ String(gps.sentencesWithFix()) + F(" FCS=") + String(gps.failedChecksum()) + F(" PCS=")
+					+ String(gps.passedChecksum());
+			if (gps.charsProcessed() < 10)
+				msg = F("WARNING: No GPS data.  Check wiring.");
+			ActlVal.gps_DiagMsg = msg;
 
 #ifdef DEBUG
 		Serial.print(F("DIAGS      Chars="));
@@ -147,19 +133,31 @@ void GPSMainLoop()
 		Serial.println(gps.passedChecksum());
 
 		if (gps.charsProcessed() < 10)
-			Serial.println(F("WARNING: No GPS data.  Check wiring."));
+		Serial.println(F("WARNING: No GPS data.  Check wiring."));
 
 		Serial.println();
 #endif
-		smartdelay(Stgs.gpsDataWait);
+		}
 	}
+	else {
+		if (timerCheckGPSConnection.ready()){
+			ActlVal.gps_connect = 0;
+			ActlVal.gps_hdop = -1.0;
+			ActlVal.gps_Satelites = -1;
+			ActlVal.gps_fixmode = -2;
+			ActlVal.gps_speed = -1.0;
+			ActlVal.gps_lastpointdist = -1.0;
+			ActlVal.gps_DistFromLastOiling = -1.0;
+		}
+	}
+
+	ActlVal.alivebyte = gps.charsProcessed() / 1000;
 }
 
 //----------------------------------------------------------------------
 //             Функция ожидания нового пакета данных от GPS-приемника
 //----------------------------------------------------------------------
-static void smartdelay(unsigned long ms)
-{
+static void smartdelay(unsigned long ms) {
 	unsigned long start = millis();
 #ifdef DEBUG_MNEA
 	do {
@@ -174,10 +172,25 @@ static void smartdelay(unsigned long ms)
 	do {
 		while (gpsSerial.available()) {
 			gps.encode(gpsSerial.read());
-
 		}
 	} while (millis() - start < ms);
 #endif
+}
+
+//----------------------------------------------------------------------
+//             Функция получения нового пакета данных от GPS-приемника
+//----------------------------------------------------------------------
+static bool getNewGPSData() {
+	unsigned long start = millis();
+	bool res = false;
+	do {
+		while (gpsSerial.available()) {
+			if (gps.encode(gpsSerial.read())) {
+				res = true;
+			}
+		}
+	} while ((millis() - start) < Stgs.gpsDataWait);
+	return res;
 }
 
 #endif /* GPS_TINYGPS_H_ */

@@ -19,20 +19,9 @@
 							<builder buildPath="${workspace_loc:/Template8266}/Release" id="io.sloeber.sketch.builder.1051932014" keepEnvironmentInBuildfile="false" name="Arduino sketch builder" parallelBuildOn="false" superClass="io.sloeber.sketch.builder"/>
 							<tool id="io.sloeber.tool.sketch.compiler.cpp.2102358241" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.440211084" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESP8266WiFi/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncWebServer-master/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncTCP-master/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/LittleFS/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Bounce2}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/SoftwareSerial/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/TinyGPS-master}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncWebServer-master/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/TinyGPS-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESP8266WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/LittleFS/src}&quot;"/>
@@ -40,25 +29,17 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/SoftwareSerial/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Bounce2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/DNSServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/TinyGPSPlus-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Wire}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1312424396" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
 							<tool id="io.sloeber.tool.compiler.c.1212682695" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.918916242" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESP8266WiFi/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncWebServer-master/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncTCP-master/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/LittleFS/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Bounce2}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/SoftwareSerial/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/TinyGPS-master}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncWebServer-master/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/TinyGPS-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESP8266WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/LittleFS/src}&quot;"/>
@@ -66,25 +47,17 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/SoftwareSerial/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Bounce2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/DNSServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/TinyGPSPlus-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Wire}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.2142660022" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
 							<tool id="io.sloeber.tool.sketch.compiler.s.1579730135" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.asm.sketch.option.incpath.754349947" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESP8266WiFi/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncWebServer-master/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/ESPAsyncTCP-master/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/LittleFS/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Bounce2}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/SoftwareSerial/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/TinyGPS-master}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/Template8266/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncWebServer-master/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/TinyGPS-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ESP8266WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/LittleFS/src}&quot;"/>
@@ -92,6 +65,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/SoftwareSerial/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Bounce2}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/DNSServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/TinyGPSPlus-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/VOiler_WEB/libraries/Wire}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1683691849" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

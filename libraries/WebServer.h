@@ -17,10 +17,11 @@
 #include "SettingsVOoiler.h"
 #include "ActualValuesVOiler.h"
 
-#define WebServEventUpdTmr 600 // Период вызова обновления Веб-сервера
+#define WebServEventUpdTmr 500 // Период вызова обновления Веб-сервера
 #define WebServEventReconnect 2000 // Период вызова обновления Веб-сервера
 
 const char *PARAM_MESSAGE = "message";
+
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -30,7 +31,6 @@ AsyncEventSource events("/events");
 
 // Timer variables
 Timer timerWebSrvEvents_readings(WebServEventUpdTmr);
-Timer timerWebSrvEvents_settings(WebServEventUpdTmr * 5);
 
 void Web_SendSettingsData() {
 	events.send(Stgs.getSettingsJSON_String().c_str(), "new_settings",
@@ -95,9 +95,8 @@ void notFound(AsyncWebServerRequest *request) {
 //             Initialize WebServer
 //----------------------------------------------------------------------
 void initWebServer() {
-#ifdef DEBUG
-	Serial.println("initWebServer() started.");
-#endif
+	Logger_printadln("WebServer", "initWebServer() started.");
+
 	// Web Server Root URL
 	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
 		request->send(LittleFS, "/index.html", "text/html");
@@ -111,8 +110,9 @@ void initWebServer() {
 		String json = ActlVal.getSensorReadingsJSON_String();
 		request->send(200, "application/json", json);
 #ifdef DEBUG
-		Serial.printf("/readings HTTP_GET: ");
-		Serial.println(String(json));
+		Logger_printadln("WebServer", "/readings HTTP_GET: " + String(json));
+//		Serial.printf("/readings HTTP_GET: ");
+//		Serial.println(String(json));
 #endif
 		json = String();
 	});
@@ -123,8 +123,9 @@ void initWebServer() {
 		String json = Stgs.getSettingsJSON_String();
 		request->send(200, "application/json", json);
 #ifdef DEBUG
-		Serial.printf("/settings HTTP_GET: ");
-		Serial.println(String(json));
+		Logger_printadln("WebServer", "/settings HTTP_GET: " + String(json));
+//		Serial.printf("/settings HTTP_GET: ");
+//		Serial.println(String(json));
 #endif
 		json = String();
 	});
@@ -138,8 +139,9 @@ void initWebServer() {
 			message = "No message sent";
 		}
 #ifdef DEBUG
-		Serial.printf("/get HTTP_GET: ");
-		Serial.println(message);
+		Logger_printadln("WebServer", "/get HTTP_GET: " + message);
+//		Serial.printf("/get HTTP_GET: ");
+//		Serial.println(message);
 #endif
 		request->send(200, "text/plain", "Hello, GET: " + message);
 	});
@@ -167,8 +169,9 @@ void initWebServer() {
 		 message = "No message sent";
 		 }*/
 #ifdef DEBUG
-		Serial.printf("/postSettings HTTP_POST: ");
-		Serial.println(message);
+		Logger_printadln("WebServer", "/postSettings HTTP_POST: " + message);
+//		Serial.printf("/postSettings HTTP_POST: ");
+//		Serial.println(message);
 #endif
 
 		/*//List all parameters
@@ -212,11 +215,11 @@ void initWebServer() {
 	// Настройка событий
 	events.onConnect(
 			[](AsyncEventSourceClient *client) {
+#ifdef DEBUG
 				if (client->lastId()) {
-					Serial.printf(
-							"Client reconnected! Last message ID that it got is: %u\n",
-							client->lastId());
+					Serial.printf("Client reconnected! Last message ID that it got is: %u\n", client->lastId());
 				}
+#endif
 				// send event with message "hello!", id current millis
 				// and set reconnect delay to 1 second
 				client->send("hello!", NULL, millis(), WebServEventReconnect);
@@ -226,28 +229,19 @@ void initWebServer() {
 
 	// Start server
 	server.begin();
-#ifdef DEBUG
-	Serial.println("initWebServer() finished.");
-#endif
+
+	Logger_printadln("WebServer", "initWebServer() finished.");
 }
 
 //----------------------------------------------------------------------
 //             Формирование событий для веб-сервера
 //----------------------------------------------------------------------
 void WebEvents() {
-
 	if (timerWebSrvEvents_readings.ready()) {
-#ifdef DEBUG
-//		Serial.println("WebEvents() - send ping");
-#endif
-		// Send Events to the client with the Sensor Readings Every 30 seconds
+		// Send Events to the client with the Readings
 		events.send(ActlVal.getSensorReadingsJSON_String().c_str(),
 				"new_readings", millis());
 	}
-
-//	if (timerWebSrvEvents_settings.ready()) {
-//		Web_SendSettingsData();
-//	}
 }
 
 #endif /* WEBSERVER_H_ */
